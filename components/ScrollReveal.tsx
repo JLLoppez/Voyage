@@ -1,8 +1,9 @@
 'use client'
 
+import type { ReactNode } from 'react'
 import { useEffect, useRef } from 'react'
 
-export default function ScrollReveal({ children }: { children: React.ReactNode }) {
+export default function ScrollReveal({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {

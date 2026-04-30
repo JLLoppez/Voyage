@@ -52,4 +52,3 @@ components/
 - **URL params** — booking form passes `from/to/date/time/pax` to `/results` via Next.js router
 - **No form tags in client components** — uses `onSubmit` on `<form>` with `e.preventDefault()`
 - **CSS custom properties** — all design tokens live in `:root` inside `globals.css`
-# Voyage

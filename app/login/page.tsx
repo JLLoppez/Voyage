@@ -52,12 +52,11 @@ export default function LoginPage() {
             </div>
           </div>
           <button type="submit" className="btn btn--primary btn--full" disabled={loading}>
-            {loading ? <span style={{ display:'inline-block', width:16, height:16, border:'2px solid rgba(0,0,0,0.2)', borderTopColor:'#0a0a0f', borderRadius:'50%', animation:'spin 0.7s linear infinite' }} /> : 'Log in'}
+            {loading ? <span className="btn-spinner" /> : 'Log in'}
           </button>
         </form>
         <p className="auth-footer">No account? <Link href="/signup">Sign up free</Link></p>
       </div>
-      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   )
 }

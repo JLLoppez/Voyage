@@ -1,4 +1,5 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
+import type { ReactNode } from 'react'
 import './globals.css'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
@@ -6,14 +7,22 @@ import Footer from '@/components/Footer'
 export const metadata: Metadata = {
   title: 'Voyage — Private Transfers Worldwide',
   description: 'Book private transfers in 150+ countries. Real drivers compete for your trip. You pick the best price.',
+  robots: { index: true, follow: true },
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export const viewport: Viewport = {
+  themeColor: '#0a0a0f',
+  width: 'device-width',
+  initialScale: 1,
+}
+
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>
+        <a href="#main-content" className="skip-link">Skip to content</a>
         <Nav />
-        <main>{children}</main>
+        <main id="main-content" tabIndex={-1}>{children}</main>
         <Footer />
       </body>
     </html>

@@ -1,5 +1,6 @@
 'use client'
 
+import ErrorBoundary from '@/components/ErrorBoundary'
 import { useState } from 'react'
 import Link from 'next/link'
 import { TRIPS, DRIVERS } from '@/lib/adminData'
@@ -29,7 +30,7 @@ const STATUS_LABEL: Record<TripStatus, string> = {
   cancelled:   'Cancelled',
 }
 
-export default function AdminDashboard() {
+function AdminDashboardInner() {
   const [activeTab, setActiveTab] = useState<'recent' | 'activity'>('recent')
   const recentTrips = TRIPS.slice(0, 6)
   const topDrivers  = [...DRIVERS].sort((a, b) => b.rides - a.rides).slice(0, 4)
@@ -166,5 +167,13 @@ export default function AdminDashboard() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function AdminDashboard() {
+  return (
+    <ErrorBoundary>
+      <AdminDashboardInner />
+    </ErrorBoundary>
   )
 }

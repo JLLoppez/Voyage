@@ -1,5 +1,6 @@
 'use client'
 
+import ErrorBoundary from '@/components/ErrorBoundary'
 import { useState, useMemo } from 'react'
 import { TRIPS } from '@/lib/adminData'
 import type { Trip, TripStatus } from '@/lib/adminTypes'
@@ -17,7 +18,7 @@ const ALL_STATUSES: TripStatus[] = ['pending', 'confirmed', 'in_progress', 'comp
 type SortKey = 'id' | 'date' | 'price' | 'pax'
 type SortDir = 'asc' | 'desc'
 
-export default function AdminTrips() {
+function AdminTripsInner() {
   const [trips, setTrips]         = useState<Trip[]>(TRIPS)
   const [search, setSearch]       = useState('')
   const [statusFilter, setStatus] = useState<TripStatus | 'all'>('all')
@@ -168,5 +169,13 @@ export default function AdminTrips() {
         </table>
       </div>
     </div>
+  )
+}
+
+export default function AdminTrips() {
+  return (
+    <ErrorBoundary>
+      <AdminTripsInner />
+    </ErrorBoundary>
   )
 }

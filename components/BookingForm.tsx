@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Autocomplete from './Autocomplete'
 import { today, clamp, buildQuery } from '@/lib/utils'
@@ -13,7 +13,10 @@ const TRIP_TYPES = [
 ]
 
 export default function BookingForm() {
-  const router = useRouter()
+  const router   = useRouter()
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current) }, [])
   const [tripType, setTripType] = useState('airport')
   const [from, setFrom] = useState('')
   const [to, setTo]     = useState('')
@@ -32,7 +35,7 @@ export default function BookingForm() {
     }
     setLoading(true)
     const query = buildQuery({ from, to, date, time, pax, type: tripType })
-    setTimeout(() => router.push(`/results?${query}`), 1000)
+    timerRef.current = window.setTimeout(() => router.push(`/results?${query}`), 1000)
   }
 
   return (
@@ -127,12 +130,8 @@ export default function BookingForm() {
 
         <button
           type="submit"
-          className="btn btn--primary btn--full btn--lg"
+          className={`btn btn--primary btn--full btn--lg${shake ? ' btn--shake' : ''}`}
           disabled={loading}
-          style={{
-            transform: shake ? 'translateX(-5px)' : undefined,
-            transition: 'transform 0.08s',
-          }}
         >
           {loading
             ? <><span className="btn-spinner" /> Finding drivers…</>

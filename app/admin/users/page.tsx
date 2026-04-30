@@ -1,10 +1,11 @@
 'use client'
 
+import ErrorBoundary from '@/components/ErrorBoundary'
 import { useState, useMemo } from 'react'
 import { USERS } from '@/lib/adminData'
 import type { User } from '@/lib/adminTypes'
 
-export default function AdminUsers() {
+function AdminUsersInner() {
   const [users, setUsers]   = useState<User[]>(USERS)
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState<'all' | 'active' | 'suspended'>('all')
@@ -117,5 +118,13 @@ export default function AdminUsers() {
         </table>
       </div>
     </div>
+  )
+}
+
+export default function AdminUsers() {
+  return (
+    <ErrorBoundary>
+      <AdminUsersInner />
+    </ErrorBoundary>
   )
 }

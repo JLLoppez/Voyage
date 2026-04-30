@@ -18,6 +18,7 @@ export default function SignupPage() {
   const submit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!firstName || !lastName || !email || !password) { setError('Please fill in all required fields.'); return }
+    if (password.length < 8) { setError('Password must be at least 8 characters.'); return }
     if (!terms) { setError('You must accept the terms to continue.'); return }
     setError('')
     setLoading(true)
@@ -104,14 +105,13 @@ export default function SignupPage() {
           </div>
           <button type="submit" className="btn btn--primary btn--full" disabled={loading}>
             {loading
-              ? <span style={{ display:'inline-block', width:16, height:16, border:'2px solid rgba(0,0,0,0.2)', borderTopColor:'#0a0a0f', borderRadius:'50%', animation:'spin 0.7s linear infinite' }} />
+              ? <span className="btn-spinner" />
               : `Create ${type === 'driver' ? 'Driver ' : ''}Account`
             }
           </button>
         </form>
         <p className="auth-footer">Already have an account? <Link href="/login">Log in</Link></p>
       </div>
-      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   )
 }

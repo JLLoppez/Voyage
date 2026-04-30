@@ -36,10 +36,19 @@ const SUGGESTIONS = [
   { label: 'Singapore Changi Airport (SIN)',   sub: 'Singapore',             icon: '✈' },
 ]
 
-function highlight(text: string, q: string) {
-  if (!q) return text
-  const re = new RegExp(`(${escapeRegex(q)})`, 'gi')
-  return text.replace(re, '<mark style="background:rgba(232,201,106,0.25);color:var(--accent);border-radius:2px">$1</mark>')
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+}
+
+function highlight(text: string, q: string): string {
+  if (!q) return escapeHtml(text)
+  const safe = escapeHtml(text)
+  const re = new RegExp(`(${escapeRegex(escapeHtml(q))})`, 'gi')
+  return safe.replace(re, '<mark style="background:rgba(232,201,106,0.25);color:var(--accent);border-radius:2px">$1</mark>')
 }
 
 interface Props {
