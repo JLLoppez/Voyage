@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import './globals.css'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
+import AuthLayoutGuard from '@/components/AuthLayoutGuard'
 
 export const metadata: Metadata = {
   title: 'Voyage — Private Transfers Worldwide',
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#0a0a0f',
+  themeColor: '#dcdcdd',
   width: 'device-width',
   initialScale: 1,
 }
@@ -21,9 +22,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en">
       <body>
         <a href="#main-content" className="skip-link">Skip to content</a>
-        <Nav />
+        <AuthLayoutGuard>
+          <Nav />
+        </AuthLayoutGuard>
         <main id="main-content" tabIndex={-1}>{children}</main>
-        <Footer />
+        <AuthLayoutGuard>
+          <Footer />
+        </AuthLayoutGuard>
       </body>
     </html>
   )

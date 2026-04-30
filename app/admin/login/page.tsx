@@ -52,7 +52,7 @@ export default function AdminLoginPage() {
 
         {error && (
           <div style={{
-            background: 'rgba(232,106,106,0.1)', border: '1px solid rgba(232,106,106,0.3)',
+            background: 'rgba(192,57,43,0.08)', border: '1px solid rgba(192,57,43,0.3)',
             borderRadius: 8, padding: '10px 14px', fontSize: 13,
             color: 'var(--danger)', marginBottom: 20,
           }}>{error}</div>

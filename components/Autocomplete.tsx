@@ -48,7 +48,7 @@ function highlight(text: string, q: string): string {
   if (!q) return escapeHtml(text)
   const safe = escapeHtml(text)
   const re = new RegExp(`(${escapeRegex(escapeHtml(q))})`, 'gi')
-  return safe.replace(re, '<mark style="background:rgba(232,201,106,0.25);color:var(--accent);border-radius:2px">$1</mark>')
+  return safe.replace(re, '<mark style="background:rgba(25,133,161,0.2);color:var(--accent);border-radius:2px">$1</mark>')
 }
 
 interface Props {

@@ -105,7 +105,7 @@ h1, h2, h3 { letter-spacing: -0.02em; line-height: 1.1; }
 .tag--accent  { background: rgba(25,133,161,0.1);  border-color: rgba(25,133,161,0.35); color: var(--accent); }
 .tag--success { background: rgba(42,157,111,0.1);   border-color: rgba(42,157,111,0.35);  color: var(--success); }
 .tag--blue    { background: rgba(25,133,161,0.1);  border-color: rgba(25,133,161,0.35); color: var(--blue); }
-.tag--muted   { background: rgba(122,120,144,0.12); border-color: rgba(122,120,144,0.3);  color: var(--muted); }
+.tag--muted   { background: rgba(76,92,104,0.10); border-color: rgba(76,92,104,0.25);  color: var(--muted); }
 .tag--danger  { background: rgba(192,57,43,0.1);  border-color: rgba(192,57,43,0.35); color: var(--danger); }
 
 /* ─── FORMS ─────────────────────────────────────────────── */

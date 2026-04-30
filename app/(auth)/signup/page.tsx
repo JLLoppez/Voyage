@@ -14,6 +14,7 @@ export default function SignupPage() {
   const [terms, setTerms]       = useState(false)
   const [loading, setLoading]   = useState(false)
   const [error, setError]       = useState('')
+  const [showPw, setShowPw]     = useState(false)
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -38,71 +39,108 @@ export default function SignupPage() {
         <p className="auth-sub">Join 500,000+ travellers on Voyage.</p>
 
         <div className="trip-tabs" style={{ marginBottom: 24 }}>
-          <button type="button" className={`trip-tab${type==='passenger'?' trip-tab--active':''}`} style={{ flex:1 }} onClick={() => setType('passenger')}>
+          <button type="button"
+            className={`trip-tab${type==='passenger'?' trip-tab--active':''}`}
+            style={{ flex: 1 }} onClick={() => setType('passenger')}>
             <span className="trip-tab__icon">🧳</span> Passenger
           </button>
-          <button type="button" className={`trip-tab${type==='driver'?' trip-tab--active':''}`} style={{ flex:1 }} onClick={() => setType('driver')}>
+          <button type="button"
+            className={`trip-tab${type==='driver'?' trip-tab--active':''}`}
+            style={{ flex: 1 }} onClick={() => setType('driver')}>
             <span className="trip-tab__icon">🚗</span> Driver
           </button>
         </div>
 
         <div className="oauth-row">
-          <button className="oauth-btn"><GoogleIcon /> Google</button>
-          <button className="oauth-btn"><span style={{ fontWeight:700 }}>𝕏</span> X / Twitter</button>
+          <button type="button" className="oauth-btn" onClick={() => alert('Google sign-up coming soon')}>
+            <GoogleIcon /> Google
+          </button>
+          <button type="button" className="oauth-btn" onClick={() => alert('X sign-up coming soon')}>
+            <span style={{ fontWeight: 700 }}>𝕏</span> X / Twitter
+          </button>
         </div>
         <div className="divider">or</div>
 
-        {error && <div style={{ background:'rgba(232,106,106,0.1)', border:'1px solid rgba(232,106,106,0.3)', borderRadius:8, padding:'10px 14px', fontSize:13, color:'var(--danger)', marginBottom:16 }}>{error}</div>}
+        {error && (
+          <div style={{
+            background: 'rgba(192,57,43,0.08)', border: '1px solid rgba(192,57,43,0.3)',
+            borderRadius: 8, padding: '10px 14px',
+            fontSize: 13, color: 'var(--danger)', marginBottom: 16,
+          }}>{error}</div>
+        )}
 
         <form className="auth-form" onSubmit={submit} noValidate>
           <div className="form-row form-row--2">
             <div className="form-group">
               <label className="form-label">First name</label>
               <div className="input-wrap"><span className="input-icon">👤</span>
-                <input type="text" className="form-input" placeholder="Jane" value={firstName} onChange={e=>setFirst(e.target.value)} required />
+                <input type="text" className="form-input" placeholder="Jane"
+                  value={firstName} onChange={e => setFirst(e.target.value)} required />
               </div>
             </div>
             <div className="form-group">
               <label className="form-label">Last name</label>
               <div className="input-wrap"><span className="input-icon">👤</span>
-                <input type="text" className="form-input" placeholder="Doe" value={lastName} onChange={e=>setLast(e.target.value)} required />
+                <input type="text" className="form-input" placeholder="Doe"
+                  value={lastName} onChange={e => setLast(e.target.value)} required />
               </div>
             </div>
           </div>
+
           <div className="form-group">
             <label className="form-label">Email address</label>
             <div className="input-wrap"><span className="input-icon">✉</span>
-              <input type="email" className="form-input" placeholder="you@example.com" value={email} onChange={e=>setEmail(e.target.value)} required />
+              <input type="email" className="form-input" placeholder="you@example.com"
+                value={email} onChange={e => setEmail(e.target.value)} required />
             </div>
           </div>
+
           <div className="form-group">
             <label className="form-label">Password</label>
-            <div className="input-wrap"><span className="input-icon">🔒</span>
-              <input type="password" className="form-input" placeholder="Min. 8 characters" value={password} onChange={e=>setPassword(e.target.value)} required />
+            <div className="input-wrap" style={{ position: 'relative' }}>
+              <span className="input-icon">🔒</span>
+              <input type={showPw ? 'text' : 'password'} className="form-input"
+                placeholder="Min. 8 characters" value={password}
+                onChange={e => setPassword(e.target.value)} required style={{ paddingRight: 56 }} />
+              <button type="button" onClick={() => setShowPw(v => !v)}
+                style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  fontSize: 12, color: 'var(--muted)', padding: 4 }}>
+                {showPw ? 'Hide' : 'Show'}
+              </button>
             </div>
           </div>
+
           {type === 'driver' && (
             <>
               <div className="form-group">
                 <label className="form-label">Phone number</label>
                 <div className="input-wrap"><span className="input-icon">📱</span>
-                  <input type="tel" className="form-input" placeholder="+1 555 000 0000" value={phone} onChange={e=>setPhone(e.target.value)} />
+                  <input type="tel" className="form-input" placeholder="+1 555 000 0000"
+                    value={phone} onChange={e => setPhone(e.target.value)} />
                 </div>
               </div>
               <div className="form-group">
                 <label className="form-label">Vehicle make & model</label>
                 <div className="input-wrap"><span className="input-icon">🚗</span>
-                  <input type="text" className="form-input" placeholder="e.g. Mercedes E-Class 2023" value={vehicle} onChange={e=>setVehicle(e.target.value)} />
+                  <input type="text" className="form-input" placeholder="e.g. Mercedes E-Class 2023"
+                    value={vehicle} onChange={e => setVehicle(e.target.value)} />
                 </div>
               </div>
             </>
           )}
-          <div style={{ display:'flex', gap:10, alignItems:'flex-start' }}>
-            <input type="checkbox" id="terms" checked={terms} onChange={e=>setTerms(e.target.checked)} style={{ marginTop:3, accentColor:'var(--accent)', width:14, height:14, flexShrink:0 }} />
-            <label htmlFor="terms" style={{ fontSize:12, color:'var(--muted)', lineHeight:1.6 }}>
-              I agree to the <a href="#" style={{ color:'var(--accent)' }}>Terms of Service</a> and <a href="#" style={{ color:'var(--accent)' }}>Privacy Policy</a>
+
+          <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+            <input type="checkbox" id="terms" checked={terms}
+              onChange={e => setTerms(e.target.checked)}
+              style={{ marginTop: 3, accentColor: 'var(--accent)', width: 14, height: 14, flexShrink: 0 }} />
+            <label htmlFor="terms" style={{ fontSize: 12, color: 'var(--muted)', lineHeight: 1.6 }}>
+              I agree to the{' '}
+              <a href="#" style={{ color: 'var(--accent)' }}>Terms of Service</a> and{' '}
+              <a href="#" style={{ color: 'var(--accent)' }}>Privacy Policy</a>
             </label>
           </div>
+
           <button type="submit" className="btn btn--primary btn--full" disabled={loading}>
             {loading
               ? <span className="btn-spinner" />
@@ -110,6 +148,7 @@ export default function SignupPage() {
             }
           </button>
         </form>
+
         <p className="auth-footer">Already have an account? <Link href="/login">Log in</Link></p>
       </div>
     </div>
