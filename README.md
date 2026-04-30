@@ -1,54 +1,112 @@
-# Voyage — Next.js 14 App Router
+# Voyage — Private Transfer Platform
 
-Static-to-Next.js conversion of the Voyage private transfer marketplace.
+> Book private transfers in 150+ countries. Real drivers compete. You pick the best offer.
 
 ## Stack
 
-- **Next.js 14** (App Router)
-- **TypeScript**
-- **Pure CSS** (no Tailwind — design tokens via CSS custom properties)
-- **No external UI libraries**
+- **Framework**: Next.js 14 (App Router)
+- **Language**: TypeScript (strict)
+- **Database**: PostgreSQL via [Neon](https://neon.tech) + Prisma ORM
+- **Auth**: Server-side sessions with `httpOnly` cookies + bcrypt
+- **Styling**: Pure CSS with design tokens (no Tailwind)
+- **Validation**: Zod (shared client + server)
+- **Testing**: Vitest + React Testing Library
+- **CI**: GitHub Actions
+
+---
 
 ## Getting started
 
+### 1. Clone & install
 ```bash
+git clone https://github.com/yourorg/voyage.git
+cd voyage
 npm install
+```
+
+### 2. Environment variables
+```bash
+cp .env.example .env.local
+```
+
+| Variable              | Description                                           |
+|-----------------------|-------------------------------------------------------|
+| `DATABASE_URL`        | PostgreSQL connection string (Neon recommended)       |
+| `SESSION_SECRET`      | Random string ≥ 32 chars (`openssl rand -base64 48`) |
+| `NEXT_PUBLIC_APP_URL` | Your app URL (`http://localhost:3000` for dev)        |
+
+### 3. Database
+```bash
+npm run db:push   # Apply schema
+npm run db:seed   # Seed admin + demo data
+```
+
+### 4. Run
+```bash
 npm run dev
-# Open http://localhost:3000
 ```
 
-## Structure
+---
+
+## Admin panel
+
+Visit `/admin` — redirects to `/admin/login`.
+
+**Demo credentials** (seeded):
+- Email: `admin@voyage.com`
+- Password: `admin123`
+
+---
+
+## Scripts
+
+| Script              | Description                                   |
+|---------------------|-----------------------------------------------|
+| `npm run dev`       | Development server                            |
+| `npm run build`     | Production build (includes `prisma generate`) |
+| `npm run typecheck` | TypeScript check (no emit)                    |
+| `npm run lint`      | ESLint                                        |
+| `npm test`          | Run all tests (Vitest)                        |
+| `npm run db:push`   | Push Prisma schema to DB                      |
+| `npm run db:seed`   | Seed demo data                                |
+| `npm run db:studio` | Open Prisma Studio                            |
+
+---
+
+## Deployment (Vercel)
+
+1. Push to GitHub
+2. Connect repo in Vercel dashboard
+3. Set environment variables from `.env.example`
+4. Vercel auto-detects Next.js — deploy
+
+> Use Neon for serverless-compatible PostgreSQL. `DATABASE_URL` must include `?sslmode=require`.
+
+---
+
+## Project structure
 
 ```
-app/
-├── layout.tsx          # Root layout — Nav + Footer wrappers
-├── globals.css         # All styles (tokens, components, animations)
-├── page.tsx            # Homepage — hero, booking form, services, testimonials
-├── results/
-│   └── page.tsx        # Driver bid results (reads URL search params)
-├── driver/
-│   └── page.tsx        # Driver dashboard — earnings, open trips, bid form
-├── how-it-works/
-│   ├── page.tsx        # Steps, comparison table, FAQ
-│   └── FaqListClient.tsx
-├── about/
-│   └── page.tsx        # Company story, team, values
-├── login/
-│   └── page.tsx        # Login with OAuth + email/password
-└── signup/
-    └── page.tsx        # Signup with passenger/driver toggle
-
-components/
-├── Nav.tsx             # Sticky nav, mobile burger, scroll shadow
-├── Footer.tsx          # Full footer grid
-├── BookingForm.tsx     # Booking card — tabs, autocomplete, pax counter
-├── Autocomplete.tsx    # Location suggestions with keyboard nav
-└── ScrollReveal.tsx    # IntersectionObserver for .animate-up elements
+voyage/
+├── app/
+│   ├── api/                   # Route Handlers (auth, bookings, admin)
+│   ├── admin/                 # Admin panel (own layout, login, dashboard)
+│   ├── login/ signup/         # Auth pages
+│   ├── results/ driver/       # Core booking flow
+│   └── globals.css / admin.css
+├── components/                # Shared UI components
+├── lib/
+│   ├── db.ts                  # Prisma singleton
+│   ├── auth.ts                # Session management
+│   ├── env.ts                 # Validated env vars (Zod)
+│   ├── rateLimit.ts           # Sliding window rate limiter
+│   ├── validations.ts         # Zod schemas (shared)
+│   ├── apiResponse.ts         # Consistent JSON helpers
+│   └── utils.ts               # Shared utilities
+├── prisma/
+│   ├── schema.prisma          # DB schema
+│   └── seed.ts                # Demo data seed
+├── __tests__/                 # Vitest tests
+├── middleware.ts              # Auth guards + security headers
+└── .github/workflows/ci.yml   # TypeScript + lint + test + build
 ```
-
-## Key patterns
-
-- **Server Components by default** — only interactive pages use `'use client'`
-- **URL params** — booking form passes `from/to/date/time/pax` to `/results` via Next.js router
-- **No form tags in client components** — uses `onSubmit` on `<form>` with `e.preventDefault()`
-- **CSS custom properties** — all design tokens live in `:root` inside `globals.css`

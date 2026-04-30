@@ -1,0 +1,106 @@
+// This is your Prisma schema file.
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  PASSENGER
+  DRIVER
+  ADMIN
+}
+
+enum TripStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum DriverStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  PENDING_REVIEW
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      UserRole @default(PASSENGER)
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessions Session[]
+  trips    Trip[]    @relation("PassengerTrips")
+  driver   Driver?
+
+  @@index([email])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique @default(cuid())
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  ipAddress String?
+  userAgent String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+}
+
+model Driver {
+  id       String       @id @default(cuid())
+  userId   String       @unique
+  car      String
+  year     Int
+  rating   Float        @default(5.0)
+  rides    Int          @default(0)
+  earnings Float        @default(0)
+  status   DriverStatus @default(PENDING_REVIEW)
+  city     String?
+  bio      String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trips Trip[]
+
+  @@index([status])
+}
+
+model Trip {
+  id          String     @id @default(cuid())
+  from        String
+  to          String
+  date        DateTime
+  pax         Int        @default(1)
+  type        String     @default("airport")
+  status      TripStatus @default(PENDING)
+  price       Float?
+  passengerId String
+  driverId    String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  passenger User    @relation("PassengerTrips", fields: [passengerId], references: [id])
+  driver    Driver? @relation(fields: [driverId], references: [id])
+
+  @@index([passengerId])
+  @@index([driverId])
+  @@index([status])
+}

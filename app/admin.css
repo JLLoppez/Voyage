@@ -56,7 +56,7 @@
   transition: background 0.15s, color 0.15s;
 }
 .admin-nav-link:hover { background: var(--card); color: var(--text); }
-.admin-nav-link--active { background: rgba(25,133,161,0.1); color: var(--accent); }
+.admin-nav-link--active { background: rgba(232,201,106,0.1); color: var(--accent); }
 .admin-nav-link__icon { font-size: 16px; width: 20px; text-align: center; }
 .admin-sidebar__footer {
   padding: 16px 20px;
@@ -210,14 +210,14 @@
 }
 .admin-table td {
   padding: 12px 16px;
-  border-bottom: 1px solid rgba(70,73,76,0.08);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
   color: var(--text);
   vertical-align: middle;
 }
 .admin-table tbody tr:last-child td { border-bottom: none; }
-.admin-table tbody tr:hover td { background: rgba(70,73,76,0.04); }
+.admin-table tbody tr:hover td { background: rgba(255,255,255,0.02); }
 .admin-table__clickable { cursor: pointer; }
-.admin-table__row--selected td { background: rgba(25,133,161,0.06) !important; }
+.admin-table__row--selected td { background: rgba(232,201,106,0.06) !important; }
 .admin-table__mono   { font-family: var(--font-mono); font-size: 12px; }
 .admin-table__accent { color: var(--accent); font-family: var(--font-mono); font-size: 12px; }
 .admin-table__muted  { color: var(--muted); font-size: 12px; }
@@ -241,21 +241,21 @@
   letter-spacing: 0.04em;
   white-space: nowrap;
 }
-.admin-badge--accent        { background: rgba(25,133,161,0.15); color: var(--accent); }
+.admin-badge--accent        { background: rgba(232,201,106,0.15); color: var(--accent); }
 .admin-badge--muted         { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
-.admin-badge--type          { background: rgba(25,133,161,0.12); color: var(--blue); }
-.admin-badge--pending       { background: rgba(25,133,161,0.12); color: var(--accent); }
-.admin-badge--confirmed     { background: rgba(42,157,111,0.12);  color: var(--success); }
-.admin-badge--in_progress   { background: rgba(25,133,161,0.12); color: var(--blue); }
-.admin-badge--completed     { background: rgba(42,157,111,0.08);  color: #2a9d6f; }
-.admin-badge--cancelled     { background: rgba(192,57,43,0.12); color: var(--danger); }
-.admin-badge--active        { background: rgba(42,157,111,0.12);  color: var(--success); }
+.admin-badge--type          { background: rgba(106,180,232,0.12); color: var(--blue); }
+.admin-badge--pending       { background: rgba(232,201,106,0.12); color: var(--accent); }
+.admin-badge--confirmed     { background: rgba(78,203,141,0.12);  color: var(--success); }
+.admin-badge--in_progress   { background: rgba(106,180,232,0.12); color: var(--blue); }
+.admin-badge--completed     { background: rgba(78,203,141,0.08);  color: #3aaa72; }
+.admin-badge--cancelled     { background: rgba(232,106,106,0.12); color: var(--danger); }
+.admin-badge--active        { background: rgba(78,203,141,0.12);  color: var(--success); }
 .admin-badge--inactive      { background: var(--surface);          color: var(--muted); border: 1px solid var(--border); }
-.admin-badge--suspended     { background: rgba(192,57,43,0.12); color: var(--danger); }
-.admin-badge--pending_review{ background: rgba(25,133,161,0.12); color: var(--accent); }
-.admin-badge--role-passenger{ background: rgba(25,133,161,0.1);  color: var(--blue); }
-.admin-badge--role-driver   { background: rgba(25,133,161,0.1);  color: var(--accent); }
-.admin-badge--role-admin    { background: rgba(192,57,43,0.1);  color: var(--danger); }
+.admin-badge--suspended     { background: rgba(232,106,106,0.12); color: var(--danger); }
+.admin-badge--pending_review{ background: rgba(232,201,106,0.12); color: var(--accent); }
+.admin-badge--role-passenger{ background: rgba(106,180,232,0.1);  color: var(--blue); }
+.admin-badge--role-driver   { background: rgba(232,201,106,0.1);  color: var(--accent); }
+.admin-badge--role-admin    { background: rgba(232,106,106,0.1);  color: var(--danger); }
 
 /* ─── Toolbar ─────────────────────────────────────────────── */
 .admin-toolbar {
@@ -281,7 +281,7 @@
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 .admin-pill:hover { color: var(--text); border-color: var(--muted); }
-.admin-pill--active { background: rgba(25,133,161,0.1); color: var(--accent); border-color: var(--accent); }
+.admin-pill--active { background: rgba(232,201,106,0.1); color: var(--accent); border-color: var(--accent); }
 
 /* ─── Form inputs (sm variant) ────────────────────────────── */
 .form-input--sm { height: 36px; font-size: 13px; }
@@ -293,7 +293,7 @@
   align-items: flex-start;
   gap: 12px;
   padding: 10px 20px;
-  border-bottom: 1px solid rgba(70,73,76,0.08);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
 }
 .admin-activity__item:last-child { border-bottom: none; }
 .admin-activity__dot {
@@ -317,7 +317,7 @@
   align-items: center;
   gap: 12px;
   padding: 10px 20px;
-  border-bottom: 1px solid rgba(70,73,76,0.08);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
 }
 .admin-driver-item:last-child { border-bottom: none; }
 .admin-driver-item__rank  { font-family: var(--font-mono); font-size: 12px; color: var(--muted); width: 24px; }
@@ -353,8 +353,8 @@
   white-space: nowrap;
 }
 .admin-action-btn:hover { background: var(--card); }
-.admin-action-btn--danger  { color: var(--danger);  border-color: rgba(192,57,43,0.3); }
-.admin-action-btn--success { color: var(--success); border-color: rgba(42,157,111,0.3); }
+.admin-action-btn--danger  { color: var(--danger);  border-color: rgba(232,106,106,0.3); }
+.admin-action-btn--success { color: var(--success); border-color: rgba(78,203,141,0.3); }
 
 /* ─── Dropdown ────────────────────────────────────────────── */
 .admin-dropdown {
@@ -479,7 +479,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 8px 0;
-  border-bottom: 1px solid rgba(70,73,76,0.08);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
   font-size: 13px;
 }
 .admin-detail-row:last-child { border-bottom: none; }
@@ -496,10 +496,10 @@
 }
 .admin-status-btns { display: flex; flex-wrap: wrap; gap: 8px; }
 .admin-status-btn          { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
-.admin-status-btn--active  { color: var(--success); border-color: rgba(42,157,111,0.3); }
+.admin-status-btn--active  { color: var(--success); border-color: rgba(78,203,141,0.3); }
 .admin-status-btn--inactive{ color: var(--muted); }
-.admin-status-btn--suspended     { color: var(--danger);  border-color: rgba(192,57,43,0.3); }
-.admin-status-btn--pending_review{ color: var(--accent);  border-color: rgba(25,133,161,0.3); }
+.admin-status-btn--suspended     { color: var(--danger);  border-color: rgba(232,106,106,0.3); }
+.admin-status-btn--pending_review{ color: var(--accent);  border-color: rgba(232,201,106,0.3); }
 
 /* ─── Admin responsive ────────────────────────────────────── */
 @media (max-width: 1024px) {
