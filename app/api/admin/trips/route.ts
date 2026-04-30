@@ -44,3 +44,31 @@ export async function GET(req: NextRequest) {
     return serverError()
   }
 }
+
+export async function PATCH(req: NextRequest) {
+  const { res } = await requireAdmin()
+  if (res) return res
+
+  try {
+    const { searchParams } = new URL(req.url)
+    const id = searchParams.get('id')
+    if (!id) {
+      const { notFound } = await import('@/lib/apiResponse')
+      return notFound('Trip ID required')
+    }
+    const body   = await req.json()
+    const parsed = (await import('@/lib/validations')).UpdateTripStatusSchema.safeParse(body)
+    if (!parsed.success) {
+      const { validationError } = await import('@/lib/apiResponse')
+      return validationError(parsed.error)
+    }
+    const trip = await db.trip.update({
+      where: { id },
+      data:  { status: parsed.data.status as never },
+    })
+    return ok(trip)
+  } catch (err) {
+    console.error('[PATCH /api/admin/trips]', err)
+    return serverError()
+  }
+}

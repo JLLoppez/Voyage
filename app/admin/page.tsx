@@ -1,39 +1,44 @@
 'use client'
 
-import ErrorBoundary from '@/components/ErrorBoundary'
 import { useState } from 'react'
 import Link from 'next/link'
-import { TRIPS, DRIVERS } from '@/lib/adminData'
-import type { TripStatus } from '@/lib/adminTypes'
+import { useAdminFetch } from '@/lib/useAdminFetch'
+import { StatSkeleton, AdminError } from '@/components/admin/AdminSkeletons'
+import ErrorBoundary from '@/components/ErrorBoundary'
 
-const STATS = [
-  { label: 'Revenue (Apr)',   value: '$42,180', delta: '+12%', up: true,  icon: '💰' },
-  { label: 'Total Trips',     value: '1,024',   delta: '+8%',  up: true,  icon: '🗺' },
-  { label: 'Active Drivers',  value: '6',       delta: '-1',   up: false, icon: '🚗' },
-  { label: 'Active Users',    value: '2,341',   delta: '+5%',  up: true,  icon: '👤' },
-]
+type TripStatus = 'PENDING' | 'CONFIRMED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'
 
-const ACTIVITY = [
-  { time: '2 min ago',  text: 'Trip #1004 started',                      type: 'info'    },
-  { time: '14 min ago', text: 'New driver Chen W. pending review',        type: 'warning' },
-  { time: '31 min ago', text: 'Trip #1003 confirmed — Sofia L. assigned', type: 'success' },
-  { time: '1 hr ago',   text: 'User Sara B. suspended',                   type: 'danger'  },
-  { time: '2 hr ago',   text: 'Trip #1009 completed — $52 settled',       type: 'success' },
-  { time: '3 hr ago',   text: 'Trip #1008 cancelled by passenger',        type: 'danger'  },
-]
-
-const STATUS_LABEL: Record<TripStatus, string> = {
-  pending:     'Pending',
-  confirmed:   'Confirmed',
-  in_progress: 'In Progress',
-  completed:   'Completed',
-  cancelled:   'Cancelled',
+interface StatsData {
+  stats: {
+    revenue:       { value: number; delta: number; up: boolean }
+    trips:         { value: number; delta: number; up: boolean }
+    activeDrivers: { value: number; pendingReview: number }
+    users:         { value: number }
+  }
+  recentTrips: Array<{
+    id: string; from: string; to: string; price: number | null; status: TripStatus
+    passenger: { name: string }
+  }>
+  topDrivers: Array<{
+    id: string; rides: number; rating: number; earnings: number; car: string
+    user: { name: string }
+  }>
 }
 
-function AdminDashboardInner() {
-  const [activeTab, setActiveTab] = useState<'recent' | 'activity'>('recent')
-  const recentTrips = TRIPS.slice(0, 6)
-  const topDrivers  = [...DRIVERS].sort((a, b) => b.rides - a.rides).slice(0, 4)
+const STATUS_LABEL: Record<TripStatus, string> = {
+  PENDING:'Pending', CONFIRMED:'Confirmed', IN_PROGRESS:'In Progress',
+  COMPLETED:'Completed', CANCELLED:'Cancelled',
+}
+
+const MONTHS  = ['Nov','Dec','Jan','Feb','Mar','Apr']
+const REVENUE = [28400,34100,31200,37800,39600,42180]
+
+function DashboardInner() {
+  const { data, loading, error, refetch } = useAdminFetch<StatsData>('/api/admin/stats')
+  const [activeTab, setActiveTab] = useState<'recent'|'activity'>('recent')
+
+  if (error) return <AdminError message={error} onRetry={refetch} />
+  const { stats, recentTrips = [], topDrivers = [] } = data ?? {}
 
   return (
     <div className="admin-page">
@@ -42,126 +47,90 @@ function AdminDashboardInner() {
           <p className="eyebrow">Overview</p>
           <h1 className="admin-page__title">Dashboard</h1>
         </div>
-        <span className="admin-badge admin-badge--accent">April 2024</span>
+        <span className="admin-badge admin-badge--accent">
+          {new Date().toLocaleDateString('en-US',{month:'long',year:'numeric'})}
+        </span>
       </div>
 
-      {/* STAT CARDS */}
       <div className="admin-stats">
-        {STATS.map(s => (
-          <div key={s.label} className="admin-stat-card">
-            <div className="admin-stat-card__icon">{s.icon}</div>
-            <div>
-              <p className="admin-stat-card__value">{s.value}</p>
-              <p className="admin-stat-card__label">{s.label}</p>
-            </div>
-            <span className={`admin-delta${s.up ? '' : ' admin-delta--down'}`}>{s.delta}</span>
+        {loading ? Array.from({length:4}).map((_,i) => <StatSkeleton key={i} />) : stats ? (<>
+          <div className="admin-stat-card">
+            <div className="admin-stat-card__icon">💰</div>
+            <div><p className="admin-stat-card__value">${stats.revenue.value.toLocaleString()}</p><p className="admin-stat-card__label">Revenue (this month)</p></div>
+            <span className={`admin-delta${stats.revenue.up?'':' admin-delta--down'}`}>{stats.revenue.delta>0?'+':''}{stats.revenue.delta}%</span>
           </div>
-        ))}
+          <div className="admin-stat-card">
+            <div className="admin-stat-card__icon">🗺</div>
+            <div><p className="admin-stat-card__value">{stats.trips.value.toLocaleString()}</p><p className="admin-stat-card__label">Total Trips</p></div>
+            <span className={`admin-delta${stats.trips.up?'':' admin-delta--down'}`}>{stats.trips.delta>0?'+':''}{stats.trips.delta}%</span>
+          </div>
+          <div className="admin-stat-card">
+            <div className="admin-stat-card__icon">🚗</div>
+            <div><p className="admin-stat-card__value">{stats.activeDrivers.value}</p><p className="admin-stat-card__label">Active Drivers</p></div>
+            {stats.activeDrivers.pendingReview>0 && <span className="admin-delta admin-delta--down">{stats.activeDrivers.pendingReview} pending</span>}
+          </div>
+          <div className="admin-stat-card">
+            <div className="admin-stat-card__icon">👤</div>
+            <div><p className="admin-stat-card__value">{stats.users.value.toLocaleString()}</p><p className="admin-stat-card__label">Total Users</p></div>
+          </div>
+        </>) : null}
       </div>
 
       <div className="admin-grid-2">
-        {/* TRIPS / ACTIVITY TABS */}
         <div className="admin-card">
           <div className="admin-card__tabs">
-            <button
-              className={`admin-tab${activeTab === 'recent' ? ' admin-tab--active' : ''}`}
-              onClick={() => setActiveTab('recent')}
-            >Recent Trips</button>
-            <button
-              className={`admin-tab${activeTab === 'activity' ? ' admin-tab--active' : ''}`}
-              onClick={() => setActiveTab('activity')}
-            >Activity</button>
+            <button className={`admin-tab${activeTab==='recent'?' admin-tab--active':''}`} onClick={()=>setActiveTab('recent')}>Recent Trips</button>
+            <button className={`admin-tab${activeTab==='activity'?' admin-tab--active':''}`} onClick={()=>setActiveTab('activity')}>Activity</button>
           </div>
-
-          {activeTab === 'recent' ? (
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Route</th>
-                  <th>Price</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
+          {activeTab==='recent' && (loading
+            ? <div style={{padding:16}}>{Array.from({length:5}).map((_,i)=><div key={i} className="skeleton skeleton--text" style={{marginBottom:12,width:'100%'}}/>)}</div>
+            : <table className="admin-table"><thead><tr><th>Route</th><th>Price</th><th>Status</th></tr></thead>
               <tbody>
-                {recentTrips.map(t => (
+                {recentTrips.map(t=>(
                   <tr key={t.id}>
-                    <td className="admin-table__mono">#{t.id}</td>
-                    <td>
-                      <span className="admin-table__route">
-                        <span className="admin-table__city">{t.from.split(' ')[0]}</span>
-                        <span className="admin-table__arrow">→</span>
-                        <span className="admin-table__city">{t.to.split(' ')[0]}</span>
-                      </span>
-                    </td>
-                    <td className="admin-table__mono">${t.price}</td>
-                    <td><span className={`admin-badge admin-badge--${t.status}`}>{STATUS_LABEL[t.status]}</span></td>
+                    <td><span className="admin-table__route"><span className="admin-table__city">{t.from.split(',')[0]}</span><span className="admin-table__arrow">→</span><span className="admin-table__city">{t.to.split(',')[0]}</span></span></td>
+                    <td className="admin-table__mono">{t.price?`$${t.price}`:'—'}</td>
+                    <td><span className={`admin-badge admin-badge--${t.status.toLowerCase()}`}>{STATUS_LABEL[t.status]}</span></td>
                   </tr>
                 ))}
-              </tbody>
-            </table>
-          ) : (
-            <ul className="admin-activity">
-              {ACTIVITY.map((a, i) => (
-                <li key={i} className="admin-activity__item">
-                  <span className={`admin-activity__dot admin-activity__dot--${a.type}`} />
-                  <div>
-                    <p className="admin-activity__text">{a.text}</p>
-                    <p className="admin-activity__time">{a.time}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
+                {recentTrips.length===0&&<tr><td colSpan={3} className="admin-table__empty">No trips yet.</td></tr>}
+              </tbody></table>
           )}
-
-          <div className="admin-card__footer">
-            <Link href="/admin/trips" className="admin-link">View all trips →</Link>
-          </div>
+          {activeTab==='activity'&&<p style={{padding:'24px 18px',fontSize:13,color:'var(--muted)'}}>Live activity feed — connect a WebSocket or polling endpoint.</p>}
+          <div className="admin-card__footer"><Link href="/admin/trips" className="admin-link">View all trips →</Link></div>
         </div>
 
-        {/* TOP DRIVERS */}
         <div className="admin-card">
-          <h2 className="admin-card__title">Top Drivers</h2>
-          <ul className="admin-driver-list">
-            {topDrivers.map((d, i) => (
-              <li key={d.id} className="admin-driver-item">
-                <span className="admin-driver-item__rank">#{i + 1}</span>
-                <div className="result-avatar result-avatar--sm">{d.initials}</div>
-                <div className="admin-driver-item__info">
-                  <p className="admin-driver-item__name">{d.name}</p>
-                  <p className="admin-driver-item__meta">{d.car} · {d.rating}★ · {d.rides} rides</p>
-                </div>
-                <span className="admin-driver-item__earn">${(d.earnings / 1000).toFixed(1)}k</span>
-              </li>
-            ))}
-          </ul>
-          <div className="admin-card__footer">
-            <Link href="/admin/drivers" className="admin-link">Manage drivers →</Link>
-          </div>
+          <div className="admin-card__title">Top Drivers</div>
+          {loading
+            ? <div style={{padding:16}}>{Array.from({length:4}).map((_,i)=><div key={i} className="skeleton skeleton--text" style={{marginBottom:14,width:'100%'}}/>)}</div>
+            : <ul className="admin-driver-list" style={{marginTop:10}}>
+                {topDrivers.map((d,i)=>(
+                  <li key={d.id} className="admin-driver-item">
+                    <span className="admin-driver-item__rank">#{i+1}</span>
+                    <div className="result-avatar result-avatar--sm">{d.user.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()}</div>
+                    <div className="admin-driver-item__info">
+                      <p className="admin-driver-item__name">{d.user.name}</p>
+                      <p className="admin-driver-item__meta">{d.car} · {d.rating}★ · {d.rides} rides</p>
+                    </div>
+                    <span className="admin-driver-item__earn">${(d.earnings/1000).toFixed(1)}k</span>
+                  </li>
+                ))}
+                {topDrivers.length===0&&<li style={{padding:'24px 18px',color:'var(--muted)',fontSize:13}}>No active drivers yet.</li>}
+              </ul>
+          }
+          <div className="admin-card__footer"><Link href="/admin/drivers" className="admin-link">Manage drivers →</Link></div>
         </div>
       </div>
 
-      {/* QUICK REVENUE BARS */}
       <div className="admin-card admin-card--full">
-        <h2 className="admin-card__title">Monthly Revenue</h2>
+        <div className="admin-card__title">Monthly Revenue</div>
         <div className="admin-bars">
-          {[
-            { month: 'Nov', val: 28400, max: 50000 },
-            { month: 'Dec', val: 34100, max: 50000 },
-            { month: 'Jan', val: 31200, max: 50000 },
-            { month: 'Feb', val: 37800, max: 50000 },
-            { month: 'Mar', val: 39600, max: 50000 },
-            { month: 'Apr', val: 42180, max: 50000 },
-          ].map(b => (
-            <div key={b.month} className="admin-bar-col">
-              <span className="admin-bar-col__val">${(b.val / 1000).toFixed(0)}k</span>
-              <div className="admin-bar-track">
-                <div
-                  className="admin-bar-fill"
-                  style={{ height: `${(b.val / b.max) * 100}%` }}
-                />
-              </div>
-              <span className="admin-bar-col__label">{b.month}</span>
+          {REVENUE.map((v,i)=>(
+            <div key={MONTHS[i]} className="admin-bar-col">
+              <span className="admin-bar-col__val">${(v/1000).toFixed(0)}k</span>
+              <div className="admin-bar-track"><div className="admin-bar-fill" style={{height:`${(v/50000)*100}%`}}/></div>
+              <span className="admin-bar-col__label">{MONTHS[i]}</span>
             </div>
           ))}
         </div>
@@ -171,9 +140,5 @@ function AdminDashboardInner() {
 }
 
 export default function AdminDashboard() {
-  return (
-    <ErrorBoundary>
-      <AdminDashboardInner />
-    </ErrorBoundary>
-  )
+  return <ErrorBoundary><DashboardInner /></ErrorBoundary>
 }

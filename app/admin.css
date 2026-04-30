@@ -515,3 +515,32 @@
 @media (max-width: 480px) {
   .admin-stats { grid-template-columns: 1fr; }
 }
+
+/* ─── Skeletons ───────────────────────────────────────── */
+@keyframes shimmerPulse {
+  0%   { opacity: 1; }
+  50%  { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+.skeleton {
+  background: var(--border);
+  border-radius: 4px;
+  animation: shimmerPulse 1.4s ease-in-out infinite;
+}
+.skeleton--text  { height: 12px; width: 70%; }
+.skeleton--short { width: 35%; }
+.skeleton--value { height: 20px; width: 60%; margin-bottom: 8px; }
+.skeleton--label { height: 10px; width: 80%; }
+.skeleton--icon  { width: 38px; height: 38px; border-radius: 8px; flex-shrink: 0; }
+
+/* ─── Error state ─────────────────────────────────────── */
+.admin-error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 60px 24px;
+  text-align: center;
+}
+.admin-error-state__icon { font-size: 32px; }
+.admin-error-state__msg  { font-size: 14px; color: var(--muted); max-width: 340px; }
